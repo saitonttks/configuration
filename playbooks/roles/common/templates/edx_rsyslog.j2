@@ -25,12 +25,15 @@ auth,authpriv.*                                         /var/log/auth.log
 # This is why we include "syslogtag."
 # Maybe one day this will be answered - http://stackoverflow.com/questions/10449447/how-to-avoid-syslogtag-from-rsyslog-template
 $template tracking,"%syslogtag%%msg%\n"
+$template remote32over,"<%PRI%>%TIMESTAMP:::date-rfc3339% %syslogtag%%msg:::sp-if-no-1st-sp%%msg%"
 
 # looks for [service_name=<name>] in the beginning of the log message,
 # if it exists the log will go into {{ COMMON_LOG_DIR }}/<name>/edx.log, otherwise
 # it will go into {{ COMMON_LOG_DIR }}/edx.log
-$template DynaFile,"{{ COMMON_LOG_DIR }}/%syslogtag:R,ERE,1,BLANK:\[service_variant=([a-zA-Z_-]*)\].*--end%/edx.log"
 
+{% if COMMON_SYSLOGSERVER %}
+$template DynaFile,"{{ COMMON_LOG_DIR }}/%syslogtag:R,ERE,1,BLANK:\[service_variant=([a-zA-Z_-]*)\].*--end%/edx.log"
+{% endif %}
 local0.*                        -?DynaFile
 local1.*                        {{ COMMON_LOG_DIR }}/tracking.log;tracking
 #cron.*                         /var/log/cron.log
@@ -91,3 +94,13 @@ daemon.*;mail.*;\
         *.=debug;*.=info;\
         *.=notice;*.=warn       |/dev/xconsole
 
+{% if COMMON_SYSLOGSERVER %}
+$ActionQueueType LinkedList
+$ActionQueueFilename srvrfwd2
+$ActionResumeRetryCount -1
+$ActionQueueSaveOnShutdown on
+local0.*                        @@{{COMMON_SYSLOGSERVER}};remote32over
+
+auth,authpriv.*                 @@{{COMMON_SYSLOGSERVER}}
+kern.*                          @@{{COMMON_SYSLOGSERVER}}
+{% endif %}
