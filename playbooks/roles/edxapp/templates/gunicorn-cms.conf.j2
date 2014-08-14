@@ -1,0 +1,19 @@
+{% if ansible_processor|length > 0 %}
+bind = '{{ edxapp_cms_gunicorn_host }}:{{ edxapp_cms_gunicorn_port }}'
+workers = {{ ansible_processor|length * worker_core_mult.cms }} 
+max_requests = 10000
+preload_app = True
+user = None
+group = None
+pythonpath = "{{ edxapp_code_dir }}"
+timeout = 300
+{% else %}
+bind = '{{ edxapp_cms_gunicorn_host }}:{{ edxapp_cms_gunicorn_port }}'
+workers = {{ worker_core_mult.cms }} 
+max_requests = 10000
+preload_app = True
+user = None
+group = None
+pythonpath = "{{ edxapp_code_dir }}"
+timeout = 300
+{% endif %}

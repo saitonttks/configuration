@@ -30,6 +30,11 @@
   with_items: service_variants_enabled
   sudo_user: "{{ supervisor_user }}"
 
+- name: "writing {{ item }} gunicorn conf file"
+  template: >
+    src=gunicorn-{{ item }}.conf.j2 dest=/etc/gunicorn-{{ item }}.conf
+  with_items: service_variants_enabled
+
 - name: writing edxapp supervisor script
   template: >
     src=edxapp.conf.j2 dest={{ supervisor_available_dir }}/edxapp.conf
