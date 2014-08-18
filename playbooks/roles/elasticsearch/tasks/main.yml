@@ -82,6 +82,15 @@
     /usr/share/elasticsearch/bin/plugin -install lukas-vlcek/bigdesk/2.2.0
   when: bigdesk.stat.isdir is not defined
   
+- name: check if the kuromoji plugin is installed
+  stat: path=/usr/share/elasticsearch/plugins/analysis-kuromoji
+  register: kuromoji
+
+- name: install kuromoji plugin
+  shell: >
+    /usr/share/elasticsearch/bin/plugin -install elasticsearch/elasticsearch-analysis-kuromoji/1.7.0
+  when: kuromoji.stat.isdir is not defined
+
 - name: Ensure elasticsearch is enabled and started
   service: name=elasticsearch state=started enabled=yes
 
