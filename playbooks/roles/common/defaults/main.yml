@@ -32,7 +32,7 @@ COMMON_NPM_MIRROR_URL: 'http://registry.npmjs.org'
 # do not include http/https
 COMMON_GIT_MIRROR: 'github.com'
 # override this var to set a different hostname
-COMMON_HOSTNAME: !!null
+COMMON_HOSTNAME: ""
 
 # Set to true to customize DNS search domains
 COMMON_CUSTOM_DHCLIENT_CONFIG: false
